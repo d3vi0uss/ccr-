@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Case Clicker Renewed</title>
+<style>
+body {
+    margin:0;
+    font-family:Arial, sans-serif;
+    background:var(--bg);
+    color:var(--text);
+}
+:root {
+    --bg:#111;
+    --card:#1c1c1c;
+    --accent:#f39c12;
+    --text:#fff;
+}
+.light {
+    --bg:#f4f4f4;
+    --card:#fff;
+    --text:#000;
+}
+header {
+    padding:15px;
+    background:var(--card);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+button {
+    background:var(--accent);
+    border:none;
+    padding:8px 14px;
+    cursor:pointer;
+    font-weight:bold;
+}
+nav button {
+    margin-right:5px;
+}
+.section {
+    display:none;
+    padding:20px;
+}
+.active {
+    display:block;
+}
+.card {
+    background:var(--card);
+    padding:15px;
+    margin:10px 0;
+}
+.inventory-item {
+    border-bottom:1px solid gray;
+    padding:5px 0;
+}
+.chat-popup {
+    position:fixed;
+    bottom:20px;
+    right:20px;
+    width:300px;
+    background:var(--card);
+    border:2px solid var(--accent);
+    display:none;
+}
+.chat-header {
+    background:var(--accent);
+    padding:5px;
+    cursor:pointer;
+}
+.chat-messages {
+    height:150px;
+    overflow-y:auto;
+    padding:5px;
+}
+.chat-input {
+    display:flex;
+}
+.chat-input input {
+    flex:1;
+}
+</style>
+</head>
+<body>
+
+<header>
+<div>💰 $<span id="money">0</span></div>
+<div>
+<input id="username" placeholder="Username">
+<button onclick="saveUsername()">Set</button>
+<button onclick="toggleTheme()">Theme</button>
+</div>
+</header>
+
+<nav>
+<button onclick="showSection('clicker')">Click</button>
+<button onclick="showSection('cases')">Cases</button>
+<button onclick="showSection('inventory')">Inventory</button>
+<button onclick="toggleChat()">Chat</button>
+</nav>
+
+<div id="clicker" class="section active">
+<h2>Click for Money</h2>
+<button onclick="clickMoney()">Click (+$1)</button>
+</div>
+
+<div id="cases" class="section">
+<h2>Open Case ($50)</h2>
+<button onclick="openCase()">Open Case</button>
+<div id="caseResult"></div>
+</div>
+
+<div id="inventory" class="section">
+<h2>Your Inventory</h2>
+<div id="inventoryList"></div>
+</div>
+
+<div class="chat-popup" id="chatBox">
+<div class="chat-header" onclick="toggleChat()">Global Chat (click to close)</div>
+<div class="chat-messages" id="chatMessages"></div>
+<div class="chat-input">
+<input id="chatInput" placeholder="Message">
+<button onclick="sendMessage()">Send</button>
+</div>
+</div>
+
+<script>
+let money = 0;
+let inventory = [];
+let username = "Player";
+
+const skins = [
+{name:"AK-47 | Redline", type:"gun"},
+{name:"M4A1-S | Hyper Beast", type:"gun"},
+{name:"AWP | Asiimov", type:"gun"},
+{name:"Karambit | Ruby", type:"knife"},
+{name:"Karambit | Emerald", type:"knife"},
+{name:"Karambit | Sapphire", type:"knife"},
+{name:"Karambit | Blue Gem", type:"knife"}
+];
+
+function clickMoney(){
+    money += 1;
+    update();
+}
+
+function openCase(){
+    if(money < 50){
+        alert("Not enough money!");
+        return;
+    }
+    money -= 50;
+
+    let roll = Math.random();
+    let item;
+
+    if(roll < 0.15){ // 15% knife (easier than real CS)
+        item = skins.filter(s => s.type === "knife")[Math.floor(Math.random()*4)+3];
+    } else {
+        item = skins[Math.floor(Math.random()*3)];
+    }
+
+    let float = Math.random().toFixed(4);
+    let condition = getCondition(float);
+
+    inventory.push({...item, float, condition});
+    document.getElementById("caseResult").innerHTML =
+        `<div class="card">You got: ${item.name}<br>Float: ${float} (${condition})</div>`;
+    updateInventory();
+    update();
+}
+
+function getCondition(f){
+    f = parseFloat(f);
+    if(f < 0.07) return "Factory New";
+    if(f < 0.15) return "Minimal Wear";
+    if(f < 0.38) return "Field-Tested";
+    if(f < 0.45) return "Well-Worn";
+    return "Battle-Scarred";
+}
+
+function update(){
+    document.getElementById("money").innerText = money;
+    localStorage.setItem("money", money);
+    localStorage.setItem("inventory", JSON.stringify(inventory));
+}
+
+function updateInventory(){
+    let list = document.getElementById("inventoryList");
+    list.innerHTML = "";
+    inventory.forEach(item=>{
+        list.innerHTML += `
+        <div class="inventory-item">
+        ${item.name} | ${item.condition} (${item.float})
+        </div>`;
+    });
+}
+
+function showSection(id){
+    document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
+    document.getElementById(id).classList.add("active");
+}
+
+function toggleTheme(){
+    document.body.classList.toggle("light");
+}
+
+function saveUsername(){
+    username = document.getElementById("username").value;
+    localStorage.setItem("username", username);
+}
+
+function toggleChat(){
+    let box = document.getElementById("chatBox");
+    box.style.display = box.style.display === "block" ? "none" : "block";
+}
+
+function sendMessage(){
+    let input = document.getElementById("chatInput");
+    if(!input.value) return;
+    let msg = document.getElementById("chatMessages");
+    msg.innerHTML += `<div><b>${username}:</b> ${input.value}</div>`;
+    input.value="";
+}
+
+function load(){
+    money = parseInt(localStorage.getItem("money")) || 0;
+    inventory = JSON.parse(localStorage.getItem("inventory")) || [];
+    username = localStorage.getItem("username") || "Player";
+    update();
+    updateInventory();
+}
+
+load();
+</script>
+
+</body>
+</html>
