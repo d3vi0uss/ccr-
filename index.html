@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CS Sim Empire</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar glass">
+    <h1>CS Sim Empire</h1>
+    <div class="balances">
+      <span id="cash">$1000.00</span>
+      <span id="bank">Bank: $0.00</span>
+      <span id="xp">XP: 0</span>
+      <span id="level">Lvl 1</span>
+      <span id="luck">Luck x1</span>
+    </div>
+    <button id="themeBtn">🌙</button>
+  </header>
+
+  <nav class="tabs glass">
+    <button data-tab="clicker" class="active">Clicker</button>
+    <button data-tab="cases">Cases</button>
+    <button data-tab="inventory">Inventory</button>
+    <button data-tab="casino">Casino</button>
+    <button data-tab="battles">Case Battles</button>
+    <button data-tab="market">Market</button>
+    <button data-tab="missions">Missions</button>
+    <button data-tab="stats">Stats</button>
+    <button data-tab="auth">Login</button>
+    <button data-tab="admin">Admin</button>
+  </nav>
+
+  <main>
+    <section id="clicker" class="tab active">
+      <div class="grid two">
+        <div class="panel glass center">
+          <h2>Money Clicker</h2>
+          <button id="clickBtn" class="big-btn">💥 CLICK FOR CASH</button>
+          <p>Per click: <span id="perClick">1</span></p>
+          <button id="upgradeClick">Upgrade Click ($50)</button>
+          <button id="rebirthBtn">Rebirth (Lvl 10)</button>
+        </div>
+        <div class="panel glass">
+          <h3>History</h3>
+          <ul id="history" class="history"></ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="cases" class="tab">
+      <div class="panel glass">
+        <h2>Cases (CS-style odds, simulated)</h2>
+        <div class="controls">
+          <select id="caseSelect"></select>
+          <label>Count <input id="openCount" type="number" min="1" max="10" value="1" /></label>
+          <button id="openCase">Open Case(s)</button>
+        </div>
+        <div class="spinner-wrap">
+          <div id="spinner" class="spinner"></div>
+        </div>
+        <div id="pulls" class="cards"></div>
+      </div>
+    </section>
+
+    <section id="inventory" class="tab">
+      <div class="panel glass">
+        <h2>Inventory + Collection</h2>
+        <div class="controls">
+          <select id="rarityFilter"><option value="all">All Rarities</option><option>Consumer</option><option>Industrial</option><option>Mil-Spec</option><option>Restricted</option><option>Classified</option><option>Covert</option><option>Knife</option></select>
+          <input id="searchSkin" placeholder="Search skin..." />
+          <button id="sortValue">Sort by Value</button>
+        </div>
+        <div id="inventoryGrid" class="cards"></div>
+      </div>
+    </section>
+
+    <section id="casino" class="tab">
+      <div class="grid three">
+        <div class="panel glass"><h3>Roulette</h3><input id="roulBet" type="number" value="10"/><button id="playRoulette">Spin</button><p id="roulOut"></p></div>
+        <div class="panel glass"><h3>Blackjack</h3><button id="playBlackjack">Play Hand ($20)</button><p id="bjOut"></p></div>
+        <div class="panel glass"><h3>Coinflip</h3><button id="playCoin">Flip ($15)</button><p id="coinOut"></p></div>
+        <div class="panel glass"><h3>Crash</h3><button id="playCrash">Play ($25)</button><p id="crashOut"></p></div>
+        <div class="panel glass"><h3>Mines</h3><button id="playMines">Play ($10)</button><p id="minesOut"></p></div>
+        <div class="panel glass"><h3>Slots</h3><button id="playSlots">Spin ($5)</button><p id="slotOut"></p></div>
+      </div>
+    </section>
+
+    <section id="battles" class="tab">
+      <div class="panel glass">
+        <h2>Case Battles (simulated)</h2>
+        <div class="controls"><label>Bet <input id="battleBet" type="number" value="50"></label><button id="startBattle">Start 1v1</button></div>
+        <p id="battleOut"></p>
+      </div>
+    </section>
+
+    <section id="market" class="tab">
+      <div class="grid two">
+        <div class="panel glass">
+          <h2>Market Trends</h2>
+          <canvas id="trendChart" width="400" height="180"></canvas>
+          <p id="marketOut">Simulated supply/demand and decay active.</p>
+        </div>
+        <div class="panel glass">
+          <h2>Bank & Loans</h2>
+          <button id="depositBank">Deposit $100</button>
+          <button id="withdrawBank">Withdraw $100</button>
+          <button id="takeLoan">Take Loan $500</button>
+          <p id="loanOut"></p>
+        </div>
+      </div>
+    </section>
+
+    <section id="missions" class="tab">
+      <div class="panel glass">
+        <h2>Daily / Weekly Missions + Battle Pass</h2>
+        <ul id="missionList"></ul>
+      </div>
+    </section>
+
+    <section id="stats" class="tab">
+      <div class="panel glass">
+        <h2>Lifetime Stats</h2>
+        <p id="statsOut"></p>
+      </div>
+    </section>
+
+    <section id="auth" class="tab">
+      <div class="panel glass center">
+        <h2>Login / Signup (local only)</h2>
+        <input id="username" placeholder="username" />
+        <input id="password" type="password" placeholder="password" />
+        <button id="signup">Signup</button>
+        <button id="login">Login</button>
+        <p id="authOut"></p>
+      </div>
+    </section>
+
+    <section id="admin" class="tab">
+      <div class="panel glass">
+        <h2>Admin Panel (d3vi0us only)</h2>
+        <button id="spawnKnife">Spawn Knife</button>
+        <button id="boostEco">Boost Economy</button>
+        <p id="adminOut"></p>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
